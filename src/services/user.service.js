@@ -1,4 +1,7 @@
+import bcrypt from "bcrypt";
 import db from "../db/db.js";
+
+const SALT_ROUNDS = 12;
 
 export const findUserByUsername = async (username) => {
     const [results] = await db.query(
@@ -9,9 +12,11 @@ export const findUserByUsername = async (username) => {
 };
 
 export const createUser = async (username, password, role = "user") => {
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
     const [result] = await db.execute(
         "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-        [username, password, role]
+        [username, hashedPassword, role]
     );
 
     return {
@@ -20,3 +25,6 @@ export const createUser = async (username, password, role = "user") => {
         role
     };
 };
+
+export const validatePassword = (plainPassword, hashedPassword) =>
+    bcrypt.compare(plainPassword, hashedPassword);
