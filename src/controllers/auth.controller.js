@@ -21,6 +21,8 @@ const register = async (req, res) => {
         return res.redirect("/register?errors=Invalid registration details");
     }
 
+    
+
     await createUser(username, password, role);
     res.redirect("/login");
 };
